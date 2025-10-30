@@ -49,6 +49,12 @@ MyChessGame class >> new [
 	self error: 'Please use one of the other constructors'
 ]
 
+{ #category : 'accessing' }
+MyChessGame >> blackPlayer [
+
+	^ blackPlayer
+]
+
 { #category : 'playing' }
 MyChessGame >> checkForMate [
 
@@ -173,4 +179,9 @@ MyChessGame >> recordMovementOf: aPiece to: aSquare [
 	].
 	
 	movesLabel text: movesText
+]
+
+{ #category : 'accessing' }
+MyChessGame >> whitePlayer [
+	^ whitePlayer 
 ]
