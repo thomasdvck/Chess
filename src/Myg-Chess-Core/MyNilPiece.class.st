@@ -6,6 +6,12 @@ Class {
 }
 
 { #category : 'testing' }
+MyNilPiece >> attackingSquares [
+
+	^ #()
+]
+
+{ #category : 'testing' }
 MyNilPiece >> isPiece [
 	^ false
 ]
@@ -16,4 +22,16 @@ MyNilPiece >> renderPieceOn: aSquare [
 	^ aSquare color isBlack
 		  ifTrue: [ 'x' ]
 		  ifFalse: [ 'z' ]
+]
+
+{ #category : 'testing' }
+MyNilPiece >> targetSquares [
+
+	^ #()
+]
+
+{ #category : 'rendering' }
+MyNilPiece >> targetSquaresLegal: aBoolean [
+
+	^ #()
 ]
