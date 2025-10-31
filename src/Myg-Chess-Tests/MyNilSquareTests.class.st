@@ -6,6 +6,21 @@ Class {
 }
 
 { #category : 'tests' }
+MyNilSquareTests >> testDirectionalNilSquare [
+
+	| board square |
+	board := MyChessBoard empty.
+
+	square := board at: 'a8'.
+	self assert: (square up isKindOf: MyNilSquare).
+	self assert: (square left isKindOf: MyNilSquare).
+
+	square := board at: 'h1'.
+	self assert: (square down isKindOf: MyNilSquare).
+	self assert: (square right isKindOf: MyNilSquare)
+]
+
+{ #category : 'tests' }
 MyNilSquareTests >> testIsNilSquare [
  self assert: (MyNilSquare new isNilSquare )
 ]
