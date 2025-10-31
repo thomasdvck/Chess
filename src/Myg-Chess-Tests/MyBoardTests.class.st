@@ -15,6 +15,14 @@ MyBoardTests >> testHighlightEmptyTarget [
 ]
 
 { #category : 'tests' }
+MyBoardTests >> testMissingSquareReturnNilSquare [
+
+	| board |
+	board := MyChessBoard empty.
+	self assert: ((board at: 'z9') isKindOf: MyNilSquare)
+]
+
+{ #category : 'tests' }
 MyBoardTests >> testUnhighlightEmptyTarget [
 
 	| board emptyTargets |
