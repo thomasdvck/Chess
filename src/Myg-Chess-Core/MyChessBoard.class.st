@@ -241,13 +241,6 @@ MyChessBoard >> unhighLightTargets: squares [
 	squares do: [ :sq | sq unhighlightTarget ]
 ]
 
-{ #category : 'selection' }
-MyChessBoard >> unselectSelected [
-	
-	selected ifNil: [ ^ self ].
-	selected doUnselect
-]
-
 { #category : 'accessing' }
 MyChessBoard >> whiteColor [
 
