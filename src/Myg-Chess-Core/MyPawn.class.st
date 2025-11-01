@@ -23,6 +23,5 @@ MyPawn >> targetSquaresLegal: aBoolean [
 	^ (self isWhite
 		   ifTrue: [ { square up } ]
 		   ifFalse: [ { square down } ]) select: [ :s |
-		  s notNil and: [
-			  s hasPiece not or: [ s contents color ~= color ] ] ]
+		  s isNilSquare not and: [ s hasPiece not or: [ s contents color ~= color ] ] ]
 ]
