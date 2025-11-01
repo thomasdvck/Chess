@@ -168,6 +168,11 @@ MyChessSquare >> initialize [
 	contents := MyNilPiece new. "Au moins chaque square a une NilPiece pour ne pas avoir de nil"
 ]
 
+{ #category : 'testing' }
+MyChessSquare >> isNilSquare [
+	^ false
+]
+
 { #category : 'accessing' }
 MyChessSquare >> left [
 
