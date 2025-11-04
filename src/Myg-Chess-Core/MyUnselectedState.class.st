@@ -32,9 +32,10 @@ MyUnselectedState >> board: anObject [
 MyUnselectedState >> clickOn: aMyChessSquare [
 	"Nothing is selected.
 	Select the chess square"
+	"case vide contient MyNilPiece donc targetSquares = liste vide donc rien se passe"
+
 	aMyChessSquare select.
-	aMyChessSquare contents ifNotNil: [
-		board highLightTargets: aMyChessSquare contents targetSquares ].
+	board highLightTargets: aMyChessSquare contents targetSquares.
 
 	^ MySelectedState board: board selected: aMyChessSquare
 ]

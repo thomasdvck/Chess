@@ -6,6 +6,17 @@ Class {
 }
 
 { #category : 'tests' }
+MyKingTest >> testBasicTargetSquaresNoNil [
+
+	| board king |
+	board := MyChessBoard empty.
+	king := MyKing white.
+	board at: 'a1' put: king.
+	self assert: (king basicTargetSquares allSatisfy: [ :s |
+			 s isNilSquare or: [ s isKindOf: MyChessSquare ] ])
+]
+
+{ #category : 'tests' }
 MyKingTest >> testIsCheckByOpponentsRook [
 
 	| king board |
