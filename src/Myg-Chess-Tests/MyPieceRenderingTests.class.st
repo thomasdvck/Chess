@@ -6,35 +6,37 @@ Class {
 }
 
 { #category : 'tests' }
-MyPieceRenderingTests >> testBishopRendering [ 
+MyPieceRenderingTests >> testBishopRendering [
+
 	| square piece |
 	piece := MyBishop white.
 	square := MyChessSquare color: Color white.
-	self assert: (square renderBishop: piece) equals: 'B'.
+	self assert: (square renderPiece: piece) equals: 'B'.
 	square := MyChessSquare color: Color black.
-	self assert: (square renderBishop: piece) equals: 'b'.
+	self assert: (square renderPiece: piece) equals: 'b'.
 
 	piece := MyBishop black.
 	square := MyChessSquare color: Color white.
-	self assert: (square renderBishop: piece) equals: 'V'.
+	self assert: (square renderPiece: piece) equals: 'V'.
 	square := MyChessSquare color: Color black.
-	self assert: (square renderBishop: piece) equals: 'v'.
+	self assert: (square renderPiece: piece) equals: 'v'
 ]
 
 { #category : 'tests' }
-MyPieceRenderingTests >> testKingRendering [ 
+MyPieceRenderingTests >> testKingRendering [
+
 	| square piece |
 	piece := MyKing white.
 	square := MyChessSquare color: Color white.
-	self assert: (square renderKing: piece) equals: 'K'.
+	self assert: (square renderPiece: piece) equals: 'K'.
 	square := MyChessSquare color: Color black.
-	self assert: (square renderKing: piece) equals: 'k'.
+	self assert: (square renderPiece: piece) equals: 'k'.
 
 	piece := MyKing black.
 	square := MyChessSquare color: Color white.
-	self assert: (square renderKing: piece) equals: 'L'.
+	self assert: (square renderPiece: piece) equals: 'L'.
 	square := MyChessSquare color: Color black.
-	self assert: (square renderKing: piece) equals: 'l'.
+	self assert: (square renderPiece: piece) equals: 'l'
 ]
 
 { #category : 'tests' }
@@ -50,19 +52,20 @@ MyPieceRenderingTests >> testNilPieceRendering [
 ]
 
 { #category : 'tests' }
-MyPieceRenderingTests >> testQueenRendering [ 
+MyPieceRenderingTests >> testQueenRendering [
+
 	| square piece |
 	piece := MyQueen white.
 	square := MyChessSquare color: Color white.
-	self assert: (square renderQueen: piece) equals: 'Q'.
+	self assert: (square renderPiece: piece) equals: 'Q'.
 	square := MyChessSquare color: Color black.
-	self assert: (square renderQueen: piece) equals: 'q'.
+	self assert: (square renderPiece: piece) equals: 'q'.
 
 	piece := MyQueen black.
 	square := MyChessSquare color: Color white.
-	self assert: (square renderQueen: piece) equals: 'W'.
+	self assert: (square renderPiece: piece) equals: 'W'.
 	square := MyChessSquare color: Color black.
-	self assert: (square renderQueen: piece) equals: 'w'.
+	self assert: (square renderPiece: piece) equals: 'w'
 ]
 
 { #category : 'tests' }
@@ -71,13 +74,13 @@ MyPieceRenderingTests >> testRookRendering [
 	| square piece |
 	piece := MyRook white.
 	square := MyChessSquare color: Color white.
-	self assert: (square renderRook: piece) equals: 'R'.
+	self assert: (square renderPiece: piece) equals: 'R'.
 	square := MyChessSquare color: Color black.
-	self assert: (square renderRook: piece) equals: 'r'.
-	
+	self assert: (square renderPiece: piece) equals: 'r'.
+
 	piece := MyRook black.
 	square := MyChessSquare color: Color white.
-	self assert: (square renderRook: piece) equals: 'T'.
+	self assert: (square renderPiece: piece) equals: 'T'.
 	square := MyChessSquare color: Color black.
-	self assert: (square renderRook: piece) equals: 't'.
+	self assert: (square renderPiece: piece) equals: 't'
 ]
