@@ -257,6 +257,12 @@ MyChessSquare >> renderPawn: aPiece [
 ]
 
 { #category : 'rendering' }
+MyChessSquare >> renderPiece: aPiece [
+
+	^ MyPieceRenderingTable symbolFor: aPiece class pieceColor: aPiece color squareColor: self color
+]
+
+{ #category : 'rendering' }
 MyChessSquare >> renderQueen: aPiece [
 
 	^ aPiece isWhite
