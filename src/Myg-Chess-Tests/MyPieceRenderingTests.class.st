@@ -40,6 +40,23 @@ MyPieceRenderingTests >> testKingRendering [
 ]
 
 { #category : 'tests' }
+MyPieceRenderingTests >> testKnightRendering [
+
+	| square piece |
+	piece := MyKnight white.
+	square := MyChessSquare color: Color white.
+	self assert: (square renderPiece: piece) equals: 'N'.
+	square := MyChessSquare color: Color black.
+	self assert: (square renderPiece: piece) equals: 'n'.
+
+	piece := MyKnight black.
+	square := MyChessSquare color: Color white.
+	self assert: (square renderPiece: piece) equals: 'M'.
+	square := MyChessSquare color: Color black.
+	self assert: (square renderPiece: piece) equals: 'm'
+]
+
+{ #category : 'tests' }
 MyPieceRenderingTests >> testNilPieceRendering [ 
 	| square piece |
 	piece := MyNilPiece new.
