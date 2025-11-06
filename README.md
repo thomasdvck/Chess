@@ -134,6 +134,7 @@ On a commencé par repérer tous les endroits où on utilisait nil dans le code,
 *   Beaucoup de méthodes utilisaient `ifNil:` ou `isNil` pour gérer ces cas.
 
 Maintenant, chaque case contient toujours une pièce (même si c’est une "fausse" pièce vide), et tous les accès hors du plateau retournent une vraie instance de MyNilSquare. Ça nous permet d’utiliser le polymorphisme et d’éviter les tests ifNil: partout.
+La logique de certaines classes a été modifiée pour ne plus faire de nil chekcs ni d'implémenter `nil`
 
 #### Exemple avant refactoring
 
@@ -175,12 +176,21 @@ MyChessSquare >> initialize
     ...
 ```
 
+Ceci est un exemple, d'autre changements ont été effectuée, ils sont disponibles dans les différents commits. Ils cherchent tous à supprimer des vérifications ou implémentations de nil.
+
 ### Pourquoi ce design ?
 
 * **Pour éviter les bugs** : Plus de nil qui traîne, donc moins de risques d’erreurs inattendues.
 * **Pour rendre le code plus lisible** : On n’a plus besoin de vérifier partout si une case ou une pièce est nil.
 * **Pour profiter du polymorphisme** : Les objets neutres (MyNilPiece, MyNilSquare) répondent aux mêmes messages que les vrais objets, donc le code est plus uniforme.
 * **Pour faciliter les évolutions** : Si on veut ajouter des règles ou des comportements, on n’a pas à se soucier des cas particuliers liés à nil.
+
+### Notre priorités
+
+*   Supprimer tous les nil checks pour atteindre l'objectif du kata.
+*   Garantir un comportement neutre et cohérent pour les objets `MyNilPiece` et `MyNilSquare`.
+*   Ne pas casser les méthodes existantes lors des éventuelles modification.
+*   Ne pas changer la logique de jeux.
 
 ### Pourquoi cette partie est très testée ?
 
@@ -191,13 +201,6 @@ Ce changement impacte la logique centrale du jeu. Nous avons donc :
 *   Vérifié que les cases vides contiennent une `MyNilPiece`.
 *   Testé que les méthodes comme `hasPiece` ou `targetSquaresLegal:` fonctionnent correctement avec les objets neutres.
 *   Ajouté des tests pour s’assurer que les méthodes directionnelles (`up`, `down`, `left`, `right`) sur une case hors plateau retournent toujours une `MyNilSquare`.
-
-### Notre priorités
-
-*   Supprimer tous les nil checks pour atteindre l'objectif du kata.
-*   Garantir un comportement neutre et cohérent pour les objets `MyNilPiece` et `MyNilSquare`.
-*   Ne pas casser les méthodes existantes lors des éventuelles modification.
-*   Ne pas changer la logique de jeux.
 
 ### Design patterns utilisé
 
@@ -247,3 +250,122 @@ Ce refactoring nous permet de :
 
 
 ### Kata 2 : Refactor piece rendering
+
+Le but de ce kata était de simplifier la logique de rendu des pièces sur l’échiquier. Dans le projet de base, chaque type de pièce avait sa propre méthode de rendu, avec beaucoup de conditions imbriquées pour gérer la couleur de la pièce et la couleur de la case.
+
+Voici la logique de rendu des pièces avant le refactor :
+
+```smalltalk
+MyChessSquare >> renderKnight: aPiece
+    ^ aPiece isWhite
+        ifFalse: [ color isBlack ifFalse: [ 'M' ] ifTrue: [ 'm' ] ]
+        ifTrue: [ color isBlack ifFalse: [ 'N' ] ifTrue: [ 'n' ] ].
+
+MyChessSquare >> renderBishop: aPiece
+    ^ aPiece isWhite
+        ifTrue: [ color isBlack ifFalse: [ 'B' ] ifTrue: [ 'b' ] ]
+        ifFalse: [ color isBlack ifFalse: [ 'V' ] ifTrue: [ 'v' ] ]
+
+... Pareil pour les autres types de pièce
+````
+
+On s'est aperçu que cette approche rendait le code très répétitif et compliqué à modifier.
+
+#### Démarche entreprise
+
+On a décidé de :
+
+*   Créer une méthode `renderPiece:` dans `MyChessSquare`.
+*   Mettre en place une table de dispatch (`MyPieceRenderingTable`) qui associe chaque type de pièce, couleur de pièce et couleur de case au bon caractère à afficher.
+*   Utiliser le double dispatch : la pièce appelle `renderPieceOn:` sur la case, qui elle-même appelle `renderPiece:` en utilisant la table.
+
+### Exemple après refactoring
+
+Dans la pièce :
+
+```smalltalk
+MyPiece >> renderPieceOn: aSquare
+    ^ aSquare renderPiece: self
+```
+
+Dans la case :
+
+```smalltalk
+MyChessSquare >> renderPiece: aPiece
+    ^ MyPieceRenderingTable symbolFor: aPiece class pieceColor: aPiece color squareColor: self color
+```
+
+La méthode centrale est donc `symbolFor:pieceClass pieceColor:squareColor:`, qui va chercher le bon caractère dans la table de dispatch.
+
+#### La table de dispatch
+
+La table de dispatch est une structure imbriquée qui associe chaque type de pièce, chaque couleur de pièce et chaque couleur de case à un symbole précis :
+
+```smalltalk
+MyPieceRenderingTable class >> table
+    table := Dictionary new.
+    table at: MyKnight put: (Dictionary new
+        at: #white put: (Dictionary new at: #white put: 'N'; at: #black put: 'n'; yourself);
+        at: #black put: (Dictionary new at: #white put: 'M'; at: #black put: 'm'; yourself);
+        yourself).
+    table at: MyBishop put: (Dictionary new
+        at: #white put: (Dictionary new at: #white put: 'B'; at: #black put: 'b'; yourself);
+        at: #black put: (Dictionary new at: #white put: 'V'; at: #black put: 'v'; yourself);
+        yourself).
+    ... "Même approche pour les autres pièces du jeux existantes"
+    ^ table
+```
+
+La méthode qui utilise cette table :
+
+```smalltalk
+MyPieceRenderingTable class >> symbolFor: pieceClass pieceColor: pieceColor squareColor: squareColor
+    pieceKey := pieceColor isBlack ifTrue: [ #black ] ifFalse: [ #white ].
+    squareKey := squareColor isBlack ifTrue: [ #black ] ifFalse: [ #white ].
+    ^ ((self table at: pieceClass) at: pieceKey) at: squareKey
+```
+
+#### Pourquoi ce design ?
+
+*   **Pour éviter la répétition** : On centralise toute la logique de rendu dans une seule table, donc plus besoin de dupliquer le code pour chaque pièce.
+*   **Pour faciliter l’extension** : Si on veut ajouter une nouvelle pièce ou changer le rendu, il suffit de modifier la table.
+*   **Pour rendre le code plus lisible** : La méthode `renderPiece:` est simple et claire, et la logique est séparée des conditions.
+*   **Pour profiter du double dispatch** : La pièce délègue le rendu à la case, qui utilise la table pour choisir le bon caractère.
+
+#### Nos priorités
+
+*   Supprimer les conditions imbriquées et la duplication de code.
+*   Centraliser la logique de rendu pour faciliter la maintenance.
+*   Garder le comportement visuel du jeu identique à l’original.
+*   Rendre le code extensible pour de futures évolutions.
+
+#### Pourquoi cette partie est très testée ?
+
+Le rendu des pièces est un aspect très visible du jeu. Une erreur ici se voit tout de suite à l’écran. On a donc :
+
+*   Adapté les tests existants pour vérifier que chaque pièce s’affiche correctement selon sa couleur et la couleur de la case.
+*   Ajouté des tests pour chaque combinaison possible (type de pièce, couleur de pièce, couleur de case).
+*   Vérifié que le rendu des pièces neutres (`MyNilPiece`) fonctionne aussi avec la nouvelle logique.
+
+
+
+#### Design patterns utilisés
+
+Voici les deux design patterns utilisés pour ce kata de refactor :
+
+*   **Table Dispatch** : Toute la logique de rendu est centralisée dans une table de correspondance.
+*   **Double Dispatch** : La pièce appelle `renderPieceOn:` sur la case, qui appelle `renderPiece:` en utilisant la table.
+
+
+#### Changements concrets dans le code
+
+*   Suppression de toutes les méthodes de rendu spécifiques à chaque pièce (`renderBishop:`, `renderKnight:`, etc.) dans `MyChessSquare`.
+*   Ajout d’une méthode générique `renderPiece:` qui utilise la table de dispatch.
+*   Mise en place de la classe `MyPieceRenderingTable` pour gérer la correspondance entre type/couleur de pièce et couleur de case.
+*   Modification et ajouts de tests pour s'assurer du bon fonctionnement du refactor.
+
+Ce refactoring nous permet de :
+
+*   Rendre le code plus modulaire et plus facile à maintenir.
+*   Ajouter ou modifier le rendu d’une pièce sans toucher au reste du code.
+*   Garantir que le comportement visuel du jeu reste identique, tout en simplifiant la logique interne.
